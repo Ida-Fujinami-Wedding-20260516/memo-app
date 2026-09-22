@@ -1,27 +1,27 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、このリポジトリで作業する Claude Code (claude.ai/code) にガイダンスを提供します。
 
-## Commands
+## コマンド
 
-- `npm run dev` — start the Vite dev server (default http://localhost:5173)
-- `npm run build` — production build (output to `dist/`)
-- `npm run preview` — serve the production build locally
-- `npm run lint` — lint with oxlint (rules in `.oxlintrc.json`)
+- `npm run dev` — Vite の開発サーバーを起動 (デフォルト http://localhost:5173)
+- `npm run build` — 本番ビルド (`dist/` に出力)
+- `npm run preview` — 本番ビルドをローカルで配信
+- `npm run lint` — oxlint でリント (ルールは `.oxlintrc.json`)
 
-There is no test runner configured yet.
+テストランナーはまだ設定されていません。
 
-## Architecture
+## アーキテクチャ
 
-Minimal Vite + React (plain JS, not TypeScript) scaffold, cleaned of the default Vite starter demo content.
+最小構成の Vite + React (TypeScript ではなくプレーンな JS) スキャフォールドで、Vite のデフォルトのスターターデモの内容は削除済みです。
 
-- `src/main.jsx` — entry point, mounts `<App />` into `#root` under `StrictMode`.
-- `src/App.jsx` — owns all memo state (`memos`, `query`, `activeTag`) and the derived `allTags`/`filteredMemos` (`useMemo`). Persists `memos` to `localStorage` under the key `memo-app:memos` on every change (see `loadMemos`/`useEffect`). `loadMemos` back-fills `tags`/`updatedAt` for memos saved by older versions of the app, so the storage schema can gain fields without a migration step. `parseTags` turns a comma-separated string into a deduped tag array — the single place tag parsing happens (used for both create and update).
-- `src/components/MemoForm.jsx` — create form (text + comma-separated tags).
-- `src/components/SearchBar.jsx` — free-text search input plus a tag-filter button row derived from `allTags`; clicking the active tag again clears the filter.
-- `src/components/MemoList.jsx` — renders filtered memos, delegating each row to `MemoItem`.
-- `src/components/MemoItem.jsx` — one memo's display state; owns its own `isEditing` local state and switches between read view and an inline edit form (text + tags) that calls back up to `App`'s `updateMemo`.
-- `src/App.css` / `src/index.css` — global and app-level styles, no CSS framework in use.
-- `vite.config.js` — standard Vite config using `@vitejs/plugin-react`.
+- `src/main.jsx` — エントリーポイント。`StrictMode` 配下で `<App />` を `#root` にマウントする。
+- `src/App.jsx` — メモの状態 (`memos`, `query`, `activeTag`) と、そこから導出される `allTags`/`filteredMemos` (`useMemo`) を一括管理する。変更のたびに `memos` を `localStorage` のキー `memo-app:memos` に永続化する (`loadMemos`/`useEffect` を参照)。`loadMemos` は旧バージョンで保存されたメモに `tags`/`updatedAt` を補完するため、マイグレーション処理なしでストレージのスキーマにフィールドを追加できる。`parseTags` はカンマ区切りの文字列を重複排除したタグ配列に変換する唯一の箇所 (作成・更新の両方で使用)。
+- `src/components/MemoForm.jsx` — 作成フォーム (本文 + カンマ区切りのタグ)。
+- `src/components/SearchBar.jsx` — フリーワード検索の入力欄と、`allTags` から導出されるタグ絞り込みボタン列。アクティブなタグを再度クリックすると絞り込みが解除される。
+- `src/components/MemoList.jsx` — 絞り込み後のメモを描画し、各行の表示は `MemoItem` に委譲する。
+- `src/components/MemoItem.jsx` — 1件のメモの表示状態を管理する。自身の `isEditing` ローカル状態を持ち、閲覧表示とインライン編集フォーム (本文 + タグ) を切り替える。編集内容は `App` の `updateMemo` に対してコールバックされる。
+- `src/App.css` / `src/index.css` — グローバル/アプリレベルのスタイル。CSS フレームワークは未使用。
+- `vite.config.js` — `@vitejs/plugin-react` を使った標準的な Vite 設定。
 
-Data flows one-directionally from `App` down (memos, filtered results, callbacks); child components never touch `localStorage` directly. No routing or external state-management library — state is small enough that `useState`/`useMemo` in `App` is sufficient. No backend — all persistence is client-side `localStorage`.
+データは `App` から子コンポーネントへ一方向に流れる (メモ、絞り込み結果、コールバック)。子コンポーネントが直接 `localStorage` に触れることはない。ルーティングや外部の状態管理ライブラリは使用しておらず、状態は `App` 内の `useState`/`useMemo` で十分な規模。バックエンドはなく、永続化はすべてクライアント側の `localStorage` で行う。
