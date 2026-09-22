@@ -1,9 +1,16 @@
 import { useState } from 'react'
 
-function MemoItem({ memo, onUpdate, onDelete }) {
+function MemoItem({ memo, onUpdate, onDelete, onAddTag }) {
   const [isEditing, setIsEditing] = useState(false)
   const [text, setText] = useState(memo.text)
   const [tags, setTags] = useState(memo.tags.join(', '))
+  const [newTag, setNewTag] = useState('')
+
+  const submitNewTag = (e) => {
+    e.preventDefault()
+    onAddTag(memo.id, newTag)
+    setNewTag('')
+  }
 
   const startEdit = () => {
     setText(memo.text)
@@ -57,6 +64,15 @@ function MemoItem({ memo, onUpdate, onDelete }) {
           ))}
         </ul>
       )}
+      <form className="add-tag-form" onSubmit={submitNewTag}>
+        <input
+          type="text"
+          value={newTag}
+          onChange={(e) => setNewTag(e.target.value)}
+          placeholder="タグを追加"
+        />
+        <button type="submit">追加</button>
+      </form>
       <div className="memo-meta">
         <time>{new Date(memo.updatedAt).toLocaleString('ja-JP')}</time>
         <div className="memo-actions">

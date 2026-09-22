@@ -104,6 +104,25 @@
   background: #eee;
 }
 
+.add-tag-form {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.add-tag-form input {
+  font: inherit;
+  font-size: 0.85em;
+  padding: 4px 8px;
+  flex: 0 1 160px;
+}
+
+.add-tag-form button {
+  font: inherit;
+  font-size: 0.85em;
+  padding: 4px 10px;
+}
+
 .memo-meta {
   display: flex;
   align-items: center;

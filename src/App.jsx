@@ -76,6 +76,18 @@ function App() {
     setMemos((prev) => prev.filter((memo) => memo.id !== id))
   }
 
+  const addTag = (id, tag) => {
+    const trimmed = tag.trim()
+    if (!trimmed) return
+    setMemos((prev) =>
+      prev.map((memo) =>
+        memo.id === id && !memo.tags.includes(trimmed)
+          ? { ...memo, tags: [...memo.tags, trimmed], updatedAt: Date.now() }
+          : memo
+      )
+    )
+  }
+
   return (
     <div id="app">
       <h1>Memo App</h1>
@@ -87,7 +99,12 @@ function App() {
         activeTag={activeTag}
         onTagChange={setActiveTag}
       />
-      <MemoList memos={filteredMemos} onUpdate={updateMemo} onDelete={deleteMemo} />
+      <MemoList
+        memos={filteredMemos}
+        onUpdate={updateMemo}
+        onDelete={deleteMemo}
+        onAddTag={addTag}
+      />
     </div>
   )
 }
