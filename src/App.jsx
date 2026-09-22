@@ -5,6 +5,7 @@ import SearchBar from './components/SearchBar'
 import './App.css'
 
 const STORAGE_KEY = 'memo-app:memos'
+const TAGS_STORAGE_KEY = 'memo-app:tags'
 
 function loadMemos() {
   try {
@@ -15,6 +16,18 @@ function loadMemos() {
   } catch {
     return []
   }
+}
+
+function loadTags(memos) {
+  let saved = []
+  try {
+    const raw = localStorage.getItem(TAGS_STORAGE_KEY)
+    saved = raw ? JSON.parse(raw) : []
+  } catch {
+    saved = []
+  }
+  const fromMemos = memos.flatMap((memo) => memo.tags)
+  return [...new Set([...saved, ...fromMemos])].sort()
 }
 
 function parseTags(input) {
@@ -30,16 +43,15 @@ function App() {
   const [memos, setMemos] = useState(loadMemos)
   const [query, setQuery] = useState('')
   const [activeTag, setActiveTag] = useState(null)
+  const [allTags, setAllTags] = useState(() => loadTags(memos))
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(memos))
   }, [memos])
 
-  const allTags = useMemo(() => {
-    const tags = new Set()
-    memos.forEach((memo) => memo.tags.forEach((tag) => tags.add(tag)))
-    return [...tags].sort()
-  }, [memos])
+  useEffect(() => {
+    localStorage.setItem(TAGS_STORAGE_KEY, JSON.stringify(allTags))
+  }, [allTags])
 
   const filteredMemos = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -50,12 +62,18 @@ function App() {
     })
   }, [memos, query, activeTag])
 
-  const addMemo = (text, tagsInput) => {
+  const createTag = (name) => {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    setAllTags((prev) => (prev.includes(trimmed) ? prev : [...prev, trimmed].sort()))
+  }
+
+  const addMemo = (text, tags) => {
     const now = Date.now()
     const memo = {
       id: crypto.randomUUID(),
       text,
-      tags: parseTags(tagsInput),
+      tags,
       createdAt: now,
       updatedAt: now,
     }
@@ -63,11 +81,11 @@ function App() {
   }
 
   const updateMemo = (id, text, tagsInput) => {
+    const parsedTags = parseTags(tagsInput)
+    parsedTags.forEach(createTag)
     setMemos((prev) =>
       prev.map((memo) =>
-        memo.id === id
-          ? { ...memo, text, tags: parseTags(tagsInput), updatedAt: Date.now() }
-          : memo
+        memo.id === id ? { ...memo, text, tags: parsedTags, updatedAt: Date.now() } : memo
       )
     )
   }
@@ -79,6 +97,7 @@ function App() {
   const addTag = (id, tag) => {
     const trimmed = tag.trim()
     if (!trimmed) return
+    createTag(trimmed)
     setMemos((prev) =>
       prev.map((memo) =>
         memo.id === id && !memo.tags.includes(trimmed)
@@ -88,10 +107,20 @@ function App() {
     )
   }
 
+  const removeTag = (id, tag) => {
+    setMemos((prev) =>
+      prev.map((memo) =>
+        memo.id === id
+          ? { ...memo, tags: memo.tags.filter((t) => t !== tag), updatedAt: Date.now() }
+          : memo
+      )
+    )
+  }
+
   return (
     <div id="app">
       <h1>Memo App</h1>
-      <MemoForm onAdd={addMemo} />
+      <MemoForm onAdd={addMemo} allTags={allTags} onCreateTag={createTag} />
       <SearchBar
         query={query}
         onQueryChange={setQuery}
@@ -104,6 +133,8 @@ function App() {
         onUpdate={updateMemo}
         onDelete={deleteMemo}
         onAddTag={addTag}
+        onRemoveTag={removeTag}
+        allTags={allTags}
       />
     </div>
   )

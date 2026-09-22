@@ -1,16 +1,12 @@
 import { useState } from 'react'
+import TagPicker from './TagPicker'
 
-function MemoItem({ memo, onUpdate, onDelete, onAddTag }) {
+function MemoItem({ memo, onUpdate, onDelete, onAddTag, onRemoveTag, allTags }) {
   const [isEditing, setIsEditing] = useState(false)
   const [text, setText] = useState(memo.text)
   const [tags, setTags] = useState(memo.tags.join(', '))
-  const [newTag, setNewTag] = useState('')
 
-  const submitNewTag = (e) => {
-    e.preventDefault()
-    onAddTag(memo.id, newTag)
-    setNewTag('')
-  }
+  const availableTags = allTags.filter((tag) => !memo.tags.includes(tag))
 
   const startEdit = () => {
     setText(memo.text)
@@ -60,19 +56,24 @@ function MemoItem({ memo, onUpdate, onDelete, onAddTag }) {
           {memo.tags.map((tag) => (
             <li key={tag} className="memo-tag">
               {tag}
+              <button
+                type="button"
+                className="memo-tag-remove"
+                aria-label={`${tag} を削除`}
+                onClick={() => onRemoveTag(memo.id, tag)}
+              >
+                ×
+              </button>
             </li>
           ))}
         </ul>
       )}
-      <form className="add-tag-form" onSubmit={submitNewTag}>
-        <input
-          type="text"
-          value={newTag}
-          onChange={(e) => setNewTag(e.target.value)}
-          placeholder="タグを追加"
-        />
-        <button type="submit">追加</button>
-      </form>
+      <TagPicker
+        options={availableTags}
+        selected={[]}
+        onToggle={(tag) => onAddTag(memo.id, tag)}
+        onCreate={(name) => onAddTag(memo.id, name)}
+      />
       <div className="memo-meta">
         <time>{new Date(memo.updatedAt).toLocaleString('ja-JP')}</time>
         <div className="memo-actions">

@@ -11,22 +11,14 @@
   margin-bottom: 24px;
 }
 
-.memo-form textarea {
+.memo-form > textarea {
   font: inherit;
   padding: 8px 10px;
   resize: vertical;
 }
 
-.memo-form input,
-.memo-form button {
+.memo-form > button {
   font: inherit;
-}
-
-.memo-form input {
-  padding: 6px 10px;
-}
-
-.memo-form button {
   align-self: flex-end;
   padding: 6px 16px;
 }
@@ -98,29 +90,27 @@
 }
 
 .memo-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 0.8em;
-  padding: 2px 8px;
+  padding: 2px 4px 2px 8px;
   border-radius: 999px;
   background: #eee;
 }
 
-.add-tag-form {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 8px;
+.memo-tag-remove {
+  font: inherit;
+  line-height: 1;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.6;
 }
 
-.add-tag-form input {
-  font: inherit;
-  font-size: 0.85em;
-  padding: 4px 8px;
-  flex: 0 1 160px;
-}
-
-.add-tag-form button {
-  font: inherit;
-  font-size: 0.85em;
-  padding: 4px 10px;
+.memo-tag-remove:hover {
+  opacity: 1;
 }
 
 .memo-meta {
@@ -151,4 +141,53 @@
   padding: 6px 10px;
   box-sizing: border-box;
   margin-bottom: 8px;
+}
+
+.tag-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tag-picker-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-option {
+  font: inherit;
+  font-size: 0.85em;
+  padding: 4px 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.tag-option.active {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}
+
+.tag-create {
+  display: flex;
+  gap: 6px;
+}
+
+.tag-create input[type='text'] {
+  width: auto;
+  font: inherit;
+  font-size: 0.85em;
+  padding: 4px 8px;
+  flex: 0 1 160px;
+  margin-bottom: 0;
+}
+
+.tag-create button {
+  font: inherit;
+  font-size: 0.85em;
+  padding: 4px 10px;
 }
