@@ -1,17 +1,21 @@
 import { useState } from 'react'
 import TagPicker from './TagPicker'
 
-function MemoItem({ memo, onUpdate, onDelete, onAddTag, onRemoveTag, allTags }) {
+function MemoItem({ memo, onUpdate, onDelete, onRemoveTag, allTags }) {
   const [isEditing, setIsEditing] = useState(false)
   const [text, setText] = useState(memo.text)
-  const [tags, setTags] = useState(memo.tags.join(', '))
-
-  const availableTags = allTags.filter((tag) => !memo.tags.includes(tag))
+  const [tags, setTags] = useState(memo.tags)
 
   const startEdit = () => {
     setText(memo.text)
-    setTags(memo.tags.join(', '))
+    setTags(memo.tags)
     setIsEditing(true)
+  }
+
+  const toggleEditTag = (tag) => {
+    setTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    )
   }
 
   const saveEdit = () => {
@@ -30,12 +34,7 @@ function MemoItem({ memo, onUpdate, onDelete, onAddTag, onRemoveTag, allTags }) 
           onChange={(e) => setText(e.target.value)}
           rows={3}
         />
-        <input
-          type="text"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          placeholder="タグ（カンマ区切り）"
-        />
+        <TagPicker options={allTags} selected={tags} onToggle={toggleEditTag} allowCreate={false} />
         <div className="memo-actions">
           <button type="button" onClick={saveEdit}>
             保存
@@ -68,12 +67,6 @@ function MemoItem({ memo, onUpdate, onDelete, onAddTag, onRemoveTag, allTags }) 
           ))}
         </ul>
       )}
-      <TagPicker
-        options={availableTags}
-        selected={[]}
-        onToggle={(tag) => onAddTag(memo.id, tag)}
-        onCreate={(name) => onAddTag(memo.id, name)}
-      />
       <div className="memo-meta">
         <time>{new Date(memo.updatedAt).toLocaleString('ja-JP')}</time>
         <div className="memo-actions">

@@ -135,14 +135,6 @@
   margin-bottom: 8px;
 }
 
-.memo-item input[type='text'] {
-  width: 100%;
-  font: inherit;
-  padding: 6px 10px;
-  box-sizing: border-box;
-  margin-bottom: 8px;
-}
-
 .tag-picker {
   display: flex;
   flex-direction: column;

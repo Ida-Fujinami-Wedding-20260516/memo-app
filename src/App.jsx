@@ -30,15 +30,6 @@ function loadTags(memos) {
   return [...new Set([...saved, ...fromMemos])].sort()
 }
 
-function parseTags(input) {
-  return [...new Set(
-    input
-      .split(',')
-      .map((tag) => tag.trim())
-      .filter(Boolean)
-  )]
-}
-
 function App() {
   const [memos, setMemos] = useState(loadMemos)
   const [query, setQuery] = useState('')
@@ -80,31 +71,14 @@ function App() {
     setMemos((prev) => [memo, ...prev])
   }
 
-  const updateMemo = (id, text, tagsInput) => {
-    const parsedTags = parseTags(tagsInput)
-    parsedTags.forEach(createTag)
+  const updateMemo = (id, text, tags) => {
     setMemos((prev) =>
-      prev.map((memo) =>
-        memo.id === id ? { ...memo, text, tags: parsedTags, updatedAt: Date.now() } : memo
-      )
+      prev.map((memo) => (memo.id === id ? { ...memo, text, tags, updatedAt: Date.now() } : memo))
     )
   }
 
   const deleteMemo = (id) => {
     setMemos((prev) => prev.filter((memo) => memo.id !== id))
-  }
-
-  const addTag = (id, tag) => {
-    const trimmed = tag.trim()
-    if (!trimmed) return
-    createTag(trimmed)
-    setMemos((prev) =>
-      prev.map((memo) =>
-        memo.id === id && !memo.tags.includes(trimmed)
-          ? { ...memo, tags: [...memo.tags, trimmed], updatedAt: Date.now() }
-          : memo
-      )
-    )
   }
 
   const removeTag = (id, tag) => {
@@ -132,7 +106,6 @@ function App() {
         memos={filteredMemos}
         onUpdate={updateMemo}
         onDelete={deleteMemo}
-        onAddTag={addTag}
         onRemoveTag={removeTag}
         allTags={allTags}
       />

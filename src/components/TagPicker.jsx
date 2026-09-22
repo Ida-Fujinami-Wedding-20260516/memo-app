@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-function TagPicker({ options, selected, onToggle, onCreate }) {
+function TagPicker({ options, selected, onToggle, onCreate, allowCreate = true }) {
   const [newTag, setNewTag] = useState('')
 
   const submitNewTag = () => {
@@ -32,18 +32,20 @@ function TagPicker({ options, selected, onToggle, onCreate }) {
           ))}
         </div>
       )}
-      <div className="tag-create">
-        <input
-          type="text"
-          value={newTag}
-          onChange={(e) => setNewTag(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="新しいタグ名"
-        />
-        <button type="button" onClick={submitNewTag}>
-          作成
-        </button>
-      </div>
+      {allowCreate && (
+        <div className="tag-create">
+          <input
+            type="text"
+            value={newTag}
+            onChange={(e) => setNewTag(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="新しいタグ名"
+          />
+          <button type="button" onClick={submitNewTag}>
+            作成
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import MemoItem from './MemoItem'
 
-function MemoList({ memos, onUpdate, onDelete, onAddTag, onRemoveTag, allTags }) {
+function MemoList({ memos, onUpdate, onDelete, onRemoveTag, allTags }) {
   if (memos.length === 0) {
     return <p className="memo-empty">メモが見つかりません</p>
   }
@@ -13,7 +13,6 @@ function MemoList({ memos, onUpdate, onDelete, onAddTag, onRemoveTag, allTags })
           memo={memo}
           onUpdate={onUpdate}
           onDelete={onDelete}
-          onAddTag={onAddTag}
           onRemoveTag={onRemoveTag}
           allTags={allTags}
         />
